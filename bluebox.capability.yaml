@@ -1,0 +1,36 @@
+apiVersion: bluebox.capability/v1
+# gostore — Level-2 grading contract. Span names follow Go 1.22+ mux method
+# patterns; verify against a reference run with `capaudit bootstrap` and adjust
+# if the SDK names server spans differently.
+service:
+  id: gostore-demo
+  name: Gostore (Go demo service)
+  owners: ["@carl-audet"]
+  identity:
+    dt_tags:
+      - { key: service.name, value: gostore-demo }
+  code:
+    repo: local/demo-gostore
+    path: .
+    primary_language: go
+capabilities:
+  - id: gostore.serve_order
+    name: The order route handles a purchase end-to-end
+    criticality: critical
+    signals:
+      span_attrs:
+        - on: "POST /api/order"
+          required: [http.request.method, http.route, http.response.status_code]
+      logs:
+        - pattern: "order accepted"
+          required_fields: [trace_id]
+      forbidden:
+        span_attrs: [http.request.body, user.email]
+        log_patterns: [password, authorization, cookie]
+  - id: gostore.health
+    name: Health/readiness route
+    criticality: nice-to-have
+    signals:
+      span_attrs:
+        - on: "GET /api/health"
+          required: [http.route]
