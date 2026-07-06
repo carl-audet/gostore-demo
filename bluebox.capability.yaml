@@ -20,7 +20,8 @@ capabilities:
     signals:
       span_attrs:
         - on: "POST /api/order"
-          required: [http.request.method, http.route, http.response.status_code]
+          required: [http.request.method, http.route, http.response.status_code,
+                     vcs.repository.url.full, vcs.ref.head.revision]
       logs:
         - pattern: "order accepted"
           required_fields: [trace_id]
