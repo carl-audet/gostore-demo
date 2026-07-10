@@ -32,11 +32,11 @@ func handleOrder(w http.ResponseWriter, r *http.Request) {
 	for _, it := range req.Items {
 		total += it.EUR * float64(it.Qty)
 	}
-	logx.Info("order accepted", logx.Fields{"items": len(req.Items), "total_eur": total})
+	logx.InfoCtx(r.Context(), "order accepted", logx.Fields{"items": len(req.Items), "total_eur": total})
 	json.NewEncoder(w).Encode(map[string]any{"ok": true, "total_eur": total})
 }
 
 func handleHealth(w http.ResponseWriter, r *http.Request) {
-	logx.Info("health check", logx.Fields{"ok": true})
+	logx.InfoCtx(r.Context(), "health check", logx.Fields{"ok": true})
 	json.NewEncoder(w).Encode(map[string]string{"status": "ok", "service": "gostore"})
 }
